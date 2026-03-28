@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+@theme {
+  --color-glass: rgba(255, 255, 255, 0.05);
+  --color-glass-border: rgba(255, 255, 255, 0.1);
+  --color-glass-dark: rgba(0, 0, 0, 0.5);
+  --color-primary-accent: #c084fc;
+}
+
+@layer base {
+  body {
+    background-color: #0d0d12;
+    color: #e4e4e7;
+    min-height: 100vh;
+    font-family: system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    margin: 0;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    background-color: var(--color-glass);
+    border: 1px solid var(--color-glass-border);
+    backdrop-filter: blur(12px);
+    border-radius: 1rem;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  }
+  
+  .glass-button {
+    background-color: var(--color-glass-dark);
+    border: 1px solid var(--color-glass-border);
+    backdrop-filter: blur(8px);
+    transition: all 0.2s ease;
+  }
+  
+  .glass-button:hover:not(:disabled) {
+    background-color: var(--color-glass);
+    border-color: var(--color-primary-accent);
+  }
+  
+  .glass-input {
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--color-glass-border);
+    backdrop-filter: blur(8px);
+    color: white;
+  }
+  
+  .glass-input:focus {
+    outline: none;
+    border-color: var(--color-primary-accent);
+    box-shadow: 0 0 0 2px rgba(192, 132, 252, 0.2);
+  }
+}
