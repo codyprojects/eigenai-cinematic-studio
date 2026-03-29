@@ -132,24 +132,38 @@ function App() {
     setIsAssembling(true);
     try {
       const form = new FormData();
-      form.append('sceneCount', String(validScenes.length));
+      
+      let chunkIndex = 0;
 
-      for (let i = 0; i < validScenes.length; i++) {
-          const scene = validScenes[i];
-          const videoUrl = scene.actionVideoUrl || scene.videoUrl;
-          
-          if (videoUrl) {
-             const vRes = await fetch(videoUrl);
+      for (const scene of validScenes) {
+          if (scene.videoUrl) {
+             const vRes = await fetch(scene.videoUrl);
              const vBlob = await vRes.blob();
-             form.append(`video_${i}`, vBlob, `video_${i}.mp4`);
+             form.append(`video_${chunkIndex}`, vBlob, `video_${chunkIndex}.mp4`);
+             
+             if (scene.audioUrl) {
+                const aRes = await fetch(scene.audioUrl);
+                const aBlob = await aRes.blob();
+                form.append(`audio_${chunkIndex}`, aBlob, `audio_${chunkIndex}.mp3`);
+             }
+             chunkIndex++;
           }
 
-          if (scene.audioUrl) {
-             const aRes = await fetch(scene.audioUrl);
-             const aBlob = await aRes.blob();
-             form.append(`audio_${i}`, aBlob, `audio_${i}.mp3`);
+          if (scene.actionVideoUrl) {
+             const vRes = await fetch(scene.actionVideoUrl);
+             const vBlob = await vRes.blob();
+             form.append(`video_${chunkIndex}`, vBlob, `video_${chunkIndex}.mp4`);
+             
+             if (!scene.videoUrl && scene.audioUrl) {
+                const aRes = await fetch(scene.audioUrl);
+                const aBlob = await aRes.blob();
+                form.append(`audio_${chunkIndex}`, aBlob, `audio_${chunkIndex}.mp3`);
+             }
+             chunkIndex++;
           }
       }
+
+      form.append('sceneCount', String(chunkIndex));
 
       const response = await fetch('http://localhost:3001/api/assemble', {
          method: 'POST',
