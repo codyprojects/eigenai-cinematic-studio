@@ -141,11 +141,7 @@ function App() {
              const vBlob = await vRes.blob();
              form.append(`video_${chunkIndex}`, vBlob, `video_${chunkIndex}.mp4`);
              
-             if (scene.audioUrl) {
-                const aRes = await fetch(scene.audioUrl);
-                const aBlob = await aRes.blob();
-                form.append(`audio_${chunkIndex}`, aBlob, `audio_${chunkIndex}.mp3`);
-             }
+
              chunkIndex++;
           }
 
@@ -154,7 +150,7 @@ function App() {
              const vBlob = await vRes.blob();
              form.append(`video_${chunkIndex}`, vBlob, `video_${chunkIndex}.mp4`);
              
-             if (!scene.videoUrl && scene.audioUrl) {
+             if (scene.audioUrl) {
                 const aRes = await fetch(scene.audioUrl);
                 const aBlob = await aRes.blob();
                 form.append(`audio_${chunkIndex}`, aBlob, `audio_${chunkIndex}.mp3`);

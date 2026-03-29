@@ -62,13 +62,25 @@ app.post('/api/assemble', upload.any(), async (req, res) => {
               command.outputOptions([
                   '-c:v copy',
                   '-c:a aac',
+                  '-ar 44100',
+                  '-ac 2',
                   '-shortest' // Will cut at shortest (so if audio is shorter, video is cut. Wait, we want the longest?)
               ]);
               // Wait, plan: "pad video length if audio duration exceeds video duration".
               // `apad` / shortest might not be what we want. 
               // Safer default without complex filter_complex: just map.
           } else {
-              command = command.outputOptions(['-c:v copy']);
+              command = command
+                  .complexFilter([
+                      'anullsrc=channel_layout=stereo:sample_rate=44100[a]'
+                  ])
+                  .outputOptions([
+                      '-map 0:v',
+                      '-map [a]',
+                      '-c:v copy',
+                      '-c:a aac',
+                      '-shortest'
+                  ]);
           }
 
           command.save(outPath)

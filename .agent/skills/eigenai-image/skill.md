@@ -64,15 +64,42 @@ curl -X POST https://api-web.eigenai.com/api/v1/generate \
   }'
 ```
 
-#### Image editing (multipart upload)
+#### Image editing
 
 ```bash
 curl -X POST https://api-web.eigenai.com/api/v1/generate \
   -H "Authorization: Bearer YOUR_API_KEY" \
-  -F "model=YOUR_MODEL" \
-  -F "prompt=Replace the bag with a laptop" \
-  -F "image_file=@/path/to/source.png" \
-  -F "num_inference_steps=15" \
-  -F "binary_response=true" \
-  --output edited.png
+  -F "model=eigen-image" \
+  -F "mode=image-editing" \
+  -F "prompt=change the sky to sunset" \
+  -F "seed=42" \
+  -F "images=@/path/to/image.jpg" \
+  -o response.json && \
+jq -r '.edited_image_base64' response.json | base64 -d > edited_image.png
 ```
+
+```javascript
+import fs from 'fs';
+
+const response = await fetch('https://api-web.eigenai.com/api/v1/generate', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    model: 'eigen-image',
+    prompt: 'A fluffy orange tabby cat sitting in a sunlit garden, surrounded by colorful flowers, soft bokeh background, golden hour lighting'
+  })
+});
+
+const result = await response.json();
+
+// Save the generated image
+if (result.turbo_image_base64) {
+  const buffer = Buffer.from(result.turbo_image_base64, 'base64');
+  fs.writeFileSync('generated_image.png', buffer);
+  console.log('Image saved to generated_image.png');
+}
+```
+
