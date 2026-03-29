@@ -78,9 +78,11 @@ export const generateImage = async (prompt: string): Promise<string> => {
   const contentType = response.headers.get('content-type') || '';
   if (contentType.includes('application/json')) {
     const data = await response.json();
-    if (data.turbo_image_base64) {
-      return `data:image/png;base64,${data.turbo_image_base64}`;
-    }
+    if (data.turbo_image_base64) return `data:image/png;base64,${data.turbo_image_base64}`;
+    if (data.image_url) return data.image_url;
+    if (data.image_path) return data.image_path;
+    if (data.images && data.images.length > 0 && data.images[0].url) return data.images[0].url;
+    throw new Error(`Unexpected JSON response in generateImage: ${JSON.stringify(data)}`);
   }
   const blob = await response.blob();
   return URL.createObjectURL(blob);
@@ -90,16 +92,13 @@ export const editImage = async (prompt: string, sourceImageUrl: string): Promise
   const form = new FormData();
   form.append('model', 'eigen-image');
   form.append('prompt', prompt);
+  form.append('mode', 'image-editing');
   form.append('num_inference_steps', '15');
   form.append('binary_response', 'true');
 
-  if (sourceImageUrl.startsWith('blob:') || sourceImageUrl.startsWith('data:')) {
-    const res = await fetch(sourceImageUrl);
-    const blob = await res.blob();
-    form.append('image_file', blob, 'image.png');
-  } else {
-    form.append('image_path', sourceImageUrl);
-  }
+  const res = await fetch(sourceImageUrl);
+  const imageBlob = await res.blob();
+  form.append('images', imageBlob, 'image.png');
 
   const response = await fetch(`${BASE_URL}/generate`, {
     method: 'POST',
@@ -112,9 +111,12 @@ export const editImage = async (prompt: string, sourceImageUrl: string): Promise
   const contentType = response.headers.get('content-type') || '';
   if (contentType.includes('application/json')) {
     const data = await response.json();
-    if (data.turbo_image_base64) {
-      return `data:image/png;base64,${data.turbo_image_base64}`;
-    }
+    if (data.turbo_image_base64) return `data:image/png;base64,${data.turbo_image_base64}`;
+    if (data.edited_image_base64) return `data:image/png;base64,${data.edited_image_base64}`;
+    if (data.image_url) return data.image_url;
+    if (data.image_path) return data.image_path;
+    if (data.images && data.images.length > 0 && data.images[0].url) return data.images[0].url;
+    throw new Error(`Unexpected JSON response in editImage: ${JSON.stringify(data)}`);
   }
   const blob = await response.blob();
   return URL.createObjectURL(blob);
