@@ -189,7 +189,7 @@ function App() {
     <div className="min-h-screen pb-24">
       <header className="glass-panel sticky top-4 mx-4 md:mx-auto max-w-7xl z-10 p-4 flex justify-between items-center bg-black/50">
         <h1 className="text-xl ml-2 font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-500">
-          EigenAI Cinematic Studio
+          Cinematic Studio
         </h1>
         <div className="flex items-center gap-4 mr-2">
           <div className="flex items-center gap-2">
