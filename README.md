@@ -1,6 +1,6 @@
-# Eigen AI Project
+# Cinematic Studio Project
 
-This project leverages the **Eigen AI Services** to build advanced video, audio, image and text functionalities. **All model calling is routed exclusively through Eigen AI.**
+This project leverages the **Eigen AI Services** to build advanced video, audio, image and text functionalities in a Cinematic Studio. **All model calling is routed exclusively through Eigen AI.**
 
 ## Supported Models
 
